@@ -1,5 +1,5 @@
 import { IUserDocument } from '@user/interfaces/user.interface';
-import { UserModel } from '@user/schemas/user.schema';
+import { UserModel } from '@user/models/user.schema';
 
 class UserService {
   public async createUser(data: IUserDocument): Promise<void> {

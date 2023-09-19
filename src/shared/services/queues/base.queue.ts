@@ -14,7 +14,6 @@ export abstract class BaseQueue {
   constructor(queueName: string) {
     this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
     bullAdapters.push(new BullAdapter(this.queue));
-    this.log = config.createLogger(queueName);
     bullAdapters = [...new Set(bullAdapters)];
     serverAdapter = new ExpressAdapter();
     serverAdapter.setBasePath('/queues');
