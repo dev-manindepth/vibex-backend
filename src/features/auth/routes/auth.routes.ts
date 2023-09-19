@@ -1,3 +1,4 @@
+import { Signin } from '@auth/controllers/signin';
 import { SignUp } from '@auth/controllers/signup';
 import express, { Router } from 'express';
 
@@ -9,8 +10,9 @@ class AuthRoutes {
   }
   public routes(): Router {
     this.router.post('/signup', SignUp.prototype.create);
+    this.router.post('/signin', Signin.prototype.read);
     return this.router;
   }
 }
 
-export const authRoutes:AuthRoutes = new AuthRoutes();
+export const authRoutes: AuthRoutes = new AuthRoutes();
