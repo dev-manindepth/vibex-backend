@@ -1,4 +1,5 @@
 import { ServerError } from '@global/helpers/error-handler';
+import { Helpers } from '@global/helpers/helpers';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
@@ -67,6 +68,26 @@ class UserCache extends BaseCache {
     } catch (err) {
       log.error(err);
       throw new ServerError('Server error . Try again');
+    }
+  }
+  public async getUserDataFromCache(userObjectId: string): Promise<IUserDocument> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const userDocument: IUserDocument = (await this.client.HGETALL(`users:${userObjectId}`)) as unknown as IUserDocument;
+      const { blocked, blockedBy, notifications, social, createAt, followersCount, followingCount, postsCount } = userDocument;
+      userDocument.blocked = Helpers.parseJSON(`${blocked}`);
+      userDocument.blockedBy = Helpers.parseJSON(`${blockedBy}`);
+      userDocument.notifications = Helpers.parseJSON(`${notifications}`);
+      userDocument.social = Helpers.parseJSON(`${social}`);
+      userDocument.followersCount = Helpers.parseJSON(`${followersCount}`);
+      userDocument.followingCount = Helpers.parseJSON(`${followingCount}`);
+      userDocument.postsCount = Helpers.parseJSON(`${postsCount}`);
+      userDocument.createAt = new Date(`${createAt}`);
+      return userDocument;
+    } catch (err) {
+      throw new ServerError('Something went wrong . Please Try again');
     }
   }
 }
