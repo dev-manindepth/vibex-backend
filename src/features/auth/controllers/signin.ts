@@ -9,6 +9,8 @@ import { IUserDocument } from '@user/interfaces/user.interface';
 import { Request, Response } from 'express';
 import JWT from 'jsonwebtoken';
 import HTTP_STATUS from 'http-status-codes';
+import { forgotPasswordTemplate } from '@service/emails/templates/forgot-password/forgot-password-template';
+import { mailQueue } from '@service/queues/email.queue';
 export class Signin {
   @joiValidation(signinSchema)
   public async read(req: Request, res: Response): Promise<void> {
