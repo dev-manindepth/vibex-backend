@@ -56,29 +56,29 @@ export interface ISearchUser {
   email: string;
   avatarColor: string;
 }
-export interface ISocketData{
-  blockedUser:string;
-  blockedBy:string;
+export interface ISocketData {
+  blockedUser: string;
+  blockedBy: string;
 }
-export interface ILogin{
-  userId:string;
+export interface ILogin {
+  userId: string;
 }
-export interface IUserJobInfo{
-  key?:string;
-  value?:string | ISocialLinks;
+export interface IUserJobInfo {
+  key?: string;
+  value?: string | ISocialLinks;
 }
-export interface IUserJob{
-  keyOne?:string;
-  keyTwo?:string;
-  key?:string;
-  value?:string
+export interface IUserJob {
+  keyOne?: string;
+  keyTwo?: string;
+  key?: string;
+  value?: string | IUserDocument | INotificationSettings;
 }
-export interface IEmailJob{
-  receiverEmail:string;
-  template:string;
-  subject:string;
+export interface IEmailJob {
+  receiverEmail: string;
+  template: string;
+  subject: string;
 }
-export interface IAllUsers{
-  users:IUserDocument[];
-  totalUsers:number;
+export interface IAllUsers {
+  users: IUserDocument[];
+  totalUsers: number;
 }

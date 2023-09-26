@@ -103,5 +103,6 @@ export class VibeXServer {
       log.info(`Server listening on PORT ${SERVER_PORT}`);
     });
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private socketIOConnections(io: Server): void {}
 }

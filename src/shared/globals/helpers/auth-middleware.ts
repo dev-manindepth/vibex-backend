@@ -17,7 +17,7 @@ class AuthMiddleware {
       req.currentUser = payload;
       next();
     } catch (err) {
-     return next(new NotAuthorizedError('Invalid token . Please try again'));
+      return next(new NotAuthorizedError('Invalid token . Please try again'));
     }
   }
   public checkAuthentication(req: Request, res: Response, next: NextFunction): void {

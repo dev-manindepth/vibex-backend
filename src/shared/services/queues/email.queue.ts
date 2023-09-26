@@ -13,4 +13,4 @@ class MailQueue extends BaseQueue {
   }
 }
 
-export const mailQueue:MailQueue = new MailQueue()
+export const mailQueue: MailQueue = new MailQueue();

@@ -18,7 +18,8 @@ export class Helpers {
     }
     return parseInt(results, 10);
   }
-  static parseJSON(data:string):any{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static parseJSON(data: string): any {
     try {
       return JSON.parse(data);
     } catch (error) {

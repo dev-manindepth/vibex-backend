@@ -25,4 +25,3 @@ export const signupSchema: ObjectSchema = Joi.object().keys({
     'any.required': 'Avatar image is required'
   })
 });
-

@@ -3,9 +3,7 @@ import ejs from 'ejs';
 
 class ForgotPasswordTemplate {
   public createTemplate(username: string, resetLink: string) {
-    return ejs.render(
-      fs.readFileSync(__dirname + '/forgot-password-template.ejs', 'utf8'),
-       {
+    return ejs.render(fs.readFileSync(__dirname + '/forgot-password-template.ejs', 'utf8'), {
       username,
       resetLink,
       image_url:

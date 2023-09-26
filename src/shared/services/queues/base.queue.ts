@@ -3,11 +3,11 @@ import { config } from '@root/config';
 import Logger from 'bunyan';
 import { createBullBoard, BullAdapter, ExpressAdapter } from '@bull-board/express';
 import { IAuthJob } from '@auth/interfaces/auth.interface';
-import { IEmailJob } from '@user/interfaces/user.interface';
+import { IEmailJob, IUserJob } from '@user/interfaces/user.interface';
 
 let bullAdapters: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
-type IBaseJob = IAuthJob | IEmailJob;
+type IBaseJob = IAuthJob | IEmailJob | IUserJob;
 export abstract class BaseQueue {
   queue: Queue.Queue;
   log: Logger;
