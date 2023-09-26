@@ -34,7 +34,7 @@ export class JoiRequestValidationError extends CustomError {
     super(message);
   }
 }
-export class BadRequest extends CustomError {
+export class BadRequestError extends CustomError {
   statusCode = HTTP_STATUS.BAD_REQUEST;
   status = 'error';
 

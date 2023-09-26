@@ -58,8 +58,8 @@ export class VibeXServer {
     applicationRoutes(app);
   }
   private globalErrorHandler(app: Application): void {
-    app.use('*', (req: Request, res: Response) => {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
+    app.all('*', (req: Request, res: Response) => {
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
     });
     app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
       log.error(error);
@@ -103,5 +103,6 @@ export class VibeXServer {
       log.info(`Server listening on PORT ${SERVER_PORT}`);
     });
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private socketIOConnections(io: Server): void {}
 }
