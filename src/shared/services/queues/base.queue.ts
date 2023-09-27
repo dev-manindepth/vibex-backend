@@ -4,10 +4,11 @@ import Logger from 'bunyan';
 import { createBullBoard, BullAdapter, ExpressAdapter } from '@bull-board/express';
 import { IAuthJob } from '@auth/interfaces/auth.interface';
 import { IEmailJob, IUserJob } from '@user/interfaces/user.interface';
+import { IPostJob } from '@post/interfaces/post.interface';
 
 let bullAdapters: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
-type IBaseJob = IAuthJob | IEmailJob | IUserJob;
+type IBaseJob = IAuthJob | IEmailJob | IUserJob | IPostJob;
 export abstract class BaseQueue {
   queue: Queue.Queue;
   log: Logger;

@@ -47,7 +47,16 @@ export class SignUp {
     res.status(HTTP_STATUS.CREATED).json({ message: 'User Created successfully', authData });
   }
   private signToken(data: IAuthDocument, userObjectId: ObjectId): string {
-    return JWT.sign({ userId: userObjectId, uId: data.uId, email: data.email }, config.JWT_TOKEN!);
+    return JWT.sign(
+      {
+        userId: userObjectId,
+        uId: data.uId,
+        email: data.email,
+        username: data.username,
+        avatarColor: data.avatarColor
+      },
+      config.JWT_TOKEN!
+    );
   }
   private signupData(data: ISignupData): IAuthDocument {
     const { _id, username, uId, email, password, avatarColor } = data;

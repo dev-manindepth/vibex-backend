@@ -13,6 +13,7 @@ import Logger from 'bunyan';
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
+import { PostSocketIO } from '@socket/post.socket';
 
 const log: Logger = config.createLogger('setupServer');
 const SERVER_PORT = 5000;
@@ -104,5 +105,8 @@ export class VibeXServer {
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private socketIOConnections(io: Server): void {}
+  private socketIOConnections(io: Server): void {
+    const postSocketHandler: PostSocketIO = new PostSocketIO(io);
+    postSocketHandler.listen();
+  }
 }
