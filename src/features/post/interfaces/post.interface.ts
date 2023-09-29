@@ -20,7 +20,7 @@ export interface IPostDocument extends Document {
   reactions?: IReactions;
   createdAt?: Date;
 }
-interface IReactions {
+export interface IReactions {
   like: number;
   love: number;
   happy: number;
@@ -68,6 +68,7 @@ export interface IPostJob {
   userId?: string | ObjectId;
   createdPost?: IPostDocument;
   postId?: string | ObjectId;
+  updatedPost?: IPostDocument
 }
 
 export interface IQueryComplete {

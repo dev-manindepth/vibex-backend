@@ -3,7 +3,7 @@ import { postService } from '@service/db/post.service';
 import { DoneCallback, Job } from 'bull';
 import Logger from 'bunyan';
 
-const log:Logger = config.createLogger('postWorker');
+const log: Logger = config.createLogger('postWorker');
 class PostWorker {
   public async savePostToDB(job: Job, done: DoneCallback) {
     try {
@@ -11,6 +11,17 @@ class PostWorker {
       await postService.addPostToDB(userId, createdPost);
       job.progress(100);
       done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
+  public async updatePostInDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { postId, updatedPost } = job.data;
+      await postService.updatePostInDB(postId, updatedPost);
+      job.progress(100);
+      done(null,job.data);
     } catch (err) {
       log.error(err);
       done(err as Error);

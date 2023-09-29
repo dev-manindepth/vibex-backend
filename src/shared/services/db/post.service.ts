@@ -10,5 +10,8 @@ class PostService {
     const user: UpdateQuery<IUserDocument> = UserModel.updateOne({ _id: userId }, { $inc: { postsCount: 1 } });
     await Promise.all([post, user]);
   }
+  public async updatePostInDB(postId: string, updatedPost: IPostDocument): Promise<void> {
+    await PostModel.updateOne({ _id: postId }, { $set: updatedPost });
+  }
 }
 export const postService: PostService = new PostService();
