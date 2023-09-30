@@ -52,4 +52,23 @@ export class PostCache extends BaseCache {
     post[0].createdAt = new Date(Helpers.parseJSON(`${post[0].createdAt}`)) as Date;
     return post[0];
   }
+  public async deletePostFromCache(postId: string, userId: string): Promise<void> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const postCount: string[] = await this.client.HMGET(`users:${userId}`, 'postsCount');
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      multi.ZREM('post', postId);
+      multi.DEL(`posts:${postId}`);
+      multi.DEL(`comments:${postId}`);
+      multi.DEL(`reactions:${postId}`);
+      const count: number = parseInt(postCount[0], 10);
+      multi.HSET(`users:${userId}`, 'postsCount', count);
+      await multi.exec();
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error . Try again.');
+    }
+  }
 }

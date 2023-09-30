@@ -1,5 +1,6 @@
 import { authMiddleware } from '@global/helpers/auth-middleware';
 import { Create } from '@post/controllers/create-post';
+import { Delete } from '@post/controllers/delete-post';
 import { Update } from '@post/controllers/update-post';
 import express, { Router } from 'express';
 
@@ -16,6 +17,8 @@ class PostRoute {
     this.router.put('/post/:postId', authMiddleware.checkAuthentication, Update.prototype.post);
     this.router.put('/post/image/post/:postId', authMiddleware.checkAuthentication, Update.prototype.postWithImage);
     this.router.put('/post/video/post/:postId', authMiddleware.checkAuthentication, Update.prototype.postWithVideo);
+
+    this.router.delete('/post/:postId', Delete.prototype.post);
     return this.router;
   }
 }

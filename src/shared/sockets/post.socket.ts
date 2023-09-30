@@ -9,7 +9,5 @@ export class PostSocketIO {
     this.io = io;
     socketIOPostObject = io;
   }
-  public listen():void{
-    
-  }
+  public listen(): void {}
 }

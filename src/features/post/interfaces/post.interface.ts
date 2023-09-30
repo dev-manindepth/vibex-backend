@@ -68,7 +68,7 @@ export interface IPostJob {
   userId?: string | ObjectId;
   createdPost?: IPostDocument;
   postId?: string | ObjectId;
-  updatedPost?: IPostDocument
+  updatedPost?: IPostDocument;
 }
 
 export interface IQueryComplete {
