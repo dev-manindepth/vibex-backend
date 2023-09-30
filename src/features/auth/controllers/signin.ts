@@ -22,7 +22,16 @@ export class Signin {
       throw new BadRequestError('Invalid Password credentials');
     }
     const user: IUserDocument = await userService.getUserByAuthId(`${existingAuthUser._id}`);
-    const userToken: string = JWT.sign({ userId: user._id, uId: existingAuthUser.uId, email: existingAuthUser.email }, config.JWT_TOKEN!);
+    const userToken: string = JWT.sign(
+      {
+        userId: user._id,
+        uId: existingAuthUser.uId,
+        email: existingAuthUser.email,
+        username: existingAuthUser.username,
+        avatarColor: existingAuthUser.avatarColor
+      },
+      config.JWT_TOKEN!
+    );
     req.session = { jwt: userToken };
     const userDocument: IUserDocument = {
       ...user,
