@@ -34,6 +34,144 @@ export class PostCache extends BaseCache {
       throw new ServerError('Server error. Try again.');
     }
   }
+
+  public async getPostsFromCache(key: string, start: number, end: number): Promise<IPostDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        this.client.connect();
+      }
+      const postIdCollection: string[] = await this.client.ZRANGE(key, start, end, { REV: true });
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const postId of postIdCollection) {
+        multi.HGETALL(`posts:${postId}`);
+      }
+      const posts: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const postCollection: IPostDocument[] = [];
+      for (const post of posts as IPostDocument[]) {
+        post.commentsCount = Helpers.parseJSON(`${post.commentsCount}`) as number;
+        post.reactions = Helpers.parseJSON(`${post.reactions}`) as IReactions;
+        post.createdAt = new Date(Helpers.parseJSON(`${post.createdAt}`)) as Date;
+        postCollection.push(post);
+      }
+      return postCollection;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again.');
+    }
+  }
+
+  public async getTotalPostsCountFromCache(): Promise<number> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const count: number = await this.client.ZCARD('post');
+      return count;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again');
+    }
+  }
+
+  public async getPostsWithImageFromCache(key: string, start: number, end: number): Promise<IPostDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const postIdCollection: string[] = await this.client.ZRANGE(key, start, end, { REV: true });
+      const multi: ReturnType<typeof this.client.multi> = await this.client.multi();
+      for (const postId of postIdCollection) {
+        multi.HGETALL(`posts:${postId}`);
+      }
+      const posts: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const postsWithImageCollection: IPostDocument[] = [];
+      for (const post of posts as IPostDocument[]) {
+        if ((post.imgId && post.imgVersion) || post.gifUrl) {
+          post.commentsCount = Helpers.parseJSON(`${post.commentsCount}`) as number;
+          post.reactions = Helpers.parseJSON(`${post.reactions}`) as IReactions;
+          post.createdAt = new Date(Helpers.parseJSON(`${post.createdAt}`)) as Date;
+          postsWithImageCollection.push(post);
+        }
+      }
+      return postsWithImageCollection;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again');
+    }
+  }
+  public async getTotalImagePostCountFromCache(): Promise<number> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const postIdCollection: string[] = await this.client.ZRANGE('post', 0, -1);
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const postId of postIdCollection) {
+        multi.HGETALL(`posts:${postId}`);
+      }
+      const posts: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const postsWithImageCollection: IPostDocument[] = [];
+      for (const post of posts as IPostDocument[]) {
+        if ((post.imgId && post.imgVersion) || post.gifUrl) {
+          postsWithImageCollection.push(post);
+        }
+      }
+      return postsWithImageCollection.length;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again.');
+    }
+  }
+  public async getTotalVideoPostCountFromCache(): Promise<number> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const postIdCollection: string[] = await this.client.ZRANGE('post', 0, -1);
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const postId of postIdCollection) {
+        multi.HGETALL(`posts:${postId}`);
+      }
+      const posts: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const postsWithVideoCollection: IPostDocument[] = [];
+      for (const post of posts as IPostDocument[]) {
+        if ((post.videoId && post.videoVersion) || post.gifUrl) {
+          postsWithVideoCollection.push(post);
+        }
+      }
+      return postsWithVideoCollection.length;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again.');
+    }
+  }
+
+  public async getPostsWithVideoFromCache(key: string, start: number, end: number): Promise<IPostDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const postIdCollection: string[] = await this.client.ZRANGE(key, start, end, { REV: true });
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const postId of postIdCollection) {
+        multi.HGETALL(`posts:${postId}`);
+      }
+      const posts: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const postsWithVideoCollection: IPostDocument[] = [];
+      for (const post of posts as IPostDocument[]) {
+        if (post.videoId && post.videoVersion) {
+          post.commentsCount = Helpers.parseJSON(`${post.commentsCount}`) as number;
+          post.reactions = Helpers.parseJSON(`${post.reactions}`) as IReactions;
+          post.createdAt = new Date(Helpers.parseJSON(`${post.createdAt}`)) as Date;
+          postsWithVideoCollection.push(post);
+        }
+      }
+      return postsWithVideoCollection;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again.');
+    }
+  }
   public async updatePostInCache(postId: string, data: IPostDocument): Promise<IPostDocument> {
     if (!this.client.isOpen) {
       this.client.connect();
