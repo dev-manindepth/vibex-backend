@@ -11,10 +11,12 @@ import { uploads } from '@global/helpers/cloudinary-upload';
 import { Helpers } from '@global/helpers/helpers';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { config } from '@root/config';
-import { userCache } from '@service/redis/user.cache';
+import { UserCache } from '@service/redis/user.cache';
 import { authQueue } from '@service/queues/auth.queue';
 import { userQueue } from '@service/queues/user.queue';
 import JWT from 'jsonwebtoken';
+
+const userCache:UserCache = new UserCache();
 export class SignUp {
   @joiValidation(signupSchema)
   public async create(req: Request, res: Response): Promise<void> {

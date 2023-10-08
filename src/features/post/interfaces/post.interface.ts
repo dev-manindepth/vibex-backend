@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { IReactions } from '@root/features/reactions/interfaces/reaction.interface';
 export interface IPostDocument extends Document {
   _id?: string | ObjectId;
   userId: string | ObjectId;
@@ -20,35 +21,7 @@ export interface IPostDocument extends Document {
   reactions?: IReactions;
   createdAt?: Date;
 }
-export interface IReactions {
-  like: number;
-  love: number;
-  happy: number;
-  wow: number;
-  sad: number;
-  angry: number;
-}
-export interface IReactionJob {
-  postId: string;
-  username: string;
-  previousReaction: string;
-  userTo?: string;
-  userFrom?: string;
-  type?: string;
-  reactionObject?: IReactionDocument;
-}
 
-interface IReactionDocument {
-  _id?: string | ObjectId;
-  postId: string | ObjectId;
-  username: string;
-  avatarColor: string;
-  type: string;
-  profilePicture: string;
-  createdAt?: Date;
-  userTo?: string | ObjectId;
-  comment?: string;
-}
 
 export interface IGetPostsQuery {
   _id?: ObjectId | string;
