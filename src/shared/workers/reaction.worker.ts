@@ -10,6 +10,17 @@ class ReactionWorker {
       const { data } = job;
       await reactionService.addReactionDataToDB(data);
       job.progress(100);
+      done(null, data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
+  public async removeReactionFromDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const {data} = job;
+      await reactionService.removeReactionDataFromDB(data);
+      job.progress(100);
       done(null,data);
     } catch (err) {
       log.error(err);

@@ -31,6 +31,13 @@ class ReactionService {
     ])) as unknown as [IUserDocument, IReactionDocument, IPostDocument];
     // send reactions notifications
   }
+  public async removeReactionDataFromDB(reactionData: IReactionJob): Promise<void> {
+    const { postId, previousReaction, username } = reactionData;
+    await Promise.all([
+      ReactionModel.deleteOne({ postId, type: previousReaction, username }),
+      PostModel.updateOne({ _id: postId }, { $inc: { [`reactions.${previousReaction}`]: -1 } }, { new: true })
+    ]);
+  }
 }
 
 export const reactionService: ReactionService = new ReactionService();
