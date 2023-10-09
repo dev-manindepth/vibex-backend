@@ -59,4 +59,40 @@ export class ReactionCache extends BaseCache {
     }
     return reactionDocumentCollection.find((reaction: IReactionDocument) => reaction.username === username);
   }
+  public async getReactionsFromCache(postId: string): Promise<[IReactionDocument[], number]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const reactionCount: number = await this.client.LLEN(`reactions:${postId}`);
+      const rawReactionDocumentList: string[] = await this.client.LRANGE(`reactions:${postId}`, 0, -1);
+      const reactionDocumentList: IReactionDocument[] = [];
+      for (const reactionDocument of rawReactionDocumentList) {
+        reactionDocumentList.push(Helpers.parseJSON(reactionDocument));
+      }
+      return rawReactionDocumentList.length ? [reactionDocumentList, reactionCount] : [[], 0];
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
+  }
+  public async getSingleReactionByUsernameForCache(postId: string, username: string): Promise<[IReactionDocument, number] | []> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const rawReactionCollection: string[] = await this.client.LRANGE(`reactions:${postId}`, 0, -1);
+      const reactionCollection: IReactionDocument[] = [];
+      for (const reaction of rawReactionCollection) {
+        reactionCollection.push(Helpers.parseJSON(reaction));
+      }
+      const reaction: IReactionDocument = reactionCollection.find(
+        (r: IReactionDocument) => r.postId === postId && r.username === username
+      ) as IReactionDocument;
+      return reaction ? [reaction, 1] : [];
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
+  }
 }
