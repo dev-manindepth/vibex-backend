@@ -6,7 +6,7 @@ import { IUserDocument } from '@user/interfaces/user.interface';
 import Logger from 'bunyan';
 
 const log: Logger = config.createLogger('userCache');
-class UserCache extends BaseCache {
+export class UserCache extends BaseCache {
   constructor() {
     super('userCache');
   }
@@ -92,4 +92,3 @@ class UserCache extends BaseCache {
   }
 }
 
-export const userCache: UserCache = new UserCache();
