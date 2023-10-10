@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+POST {{baseUrl}}/{{urlPath}}/post/comment
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "userTo": "650fa3f16360a4840ff1dbef",
+  "postId": "6513fef0f3da4d25efbd0880",
+  "comment": "This is my second comment",
+  "profilePicture":"https://res.cloudinary.com/df5lu39z1/v1695523831/650fa3f16360a4840ff1dbef"
+}

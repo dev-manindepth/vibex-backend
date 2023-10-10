@@ -1,4 +1,4 @@
-import { IReactionDocument } from '@reactions/interfaces/reaction.interface';
+import { IReactionDocument } from '@reaction/interfaces/reaction.interface';
 import { reactionService } from '@service/db/reaction.service';
 import { ReactionCache } from '@service/redis/reaction.cache';
 import { Request, Response } from 'express';
