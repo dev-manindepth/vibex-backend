@@ -30,6 +30,6 @@ export class Add {
       comment: commentData
     };
     commentQueue.addCommentJob('addCommentToDB', databaseComment);
-    res.status(HTTP_STATUS.OK).json({message:'Comment added successfully'});
+    res.status(HTTP_STATUS.CREATED).json({ message: 'Comment added successfully' });
   }
 }
