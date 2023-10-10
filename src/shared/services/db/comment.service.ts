@@ -1,4 +1,4 @@
-import { ICommentDocument, ICommentJob } from '@comment/interfaces/comments.interface';
+import { ICommentDocument, ICommentJob, ICommentNameList, IQueryComment } from '@comment/interfaces/comments.interface';
 import { CommentModel } from '@comment/models/comments.schema';
 import { IPostDocument } from '@post/interfaces/post.interface';
 import { PostModel } from '@post/models/post.model';
@@ -23,6 +23,34 @@ class CommentService {
     const user: Promise<IUserDocument> = userCache.getUserDataFromCache(userTo) as Promise<IUserDocument>;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response: [ICommentDocument, IPostDocument, IUserDocument] = await Promise.all([comment, post, user]);
+  }
+  public async getCommentFromDB(query: IQueryComment, sort: Record<string, 1 | -1>): Promise<ICommentDocument[]> {
+    const comments: ICommentDocument[] = await CommentModel.aggregate([
+      {
+        $match: query
+      },
+      {
+        $sort: sort
+      }
+    ]);
+    return comments;
+  }
+  public async getCommentNamesFromDB(query: IQueryComment, sort: Record<string, 1 | -1>): Promise<ICommentNameList[]> {
+    const commentsNameList: ICommentNameList[] = await CommentModel.aggregate([
+      {
+        $match: query
+      },
+      {
+        $sort: sort
+      },
+      {
+        $group: { _id: null, names: { $addToSet: '$username' }, count: { $sum: 1 } }
+      },
+      {
+        $project: { _id: 0 }
+      }
+    ]);
+    return commentsNameList;
   }
 }
 export const commentService: CommentService = new CommentService();
