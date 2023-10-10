@@ -1,4 +1,4 @@
-import { IReactionJob } from '@reactions/interfaces/reaction.interface';
+import { IReactionJob } from '@reaction/interfaces/reaction.interface';
 import { reactionQueue } from '@service/queues/reaction.queue';
 import { ReactionCache } from '@service/redis/reaction.cache';
 import { Request, Response } from 'express';
