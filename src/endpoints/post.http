@@ -26,9 +26,9 @@ Accept: application/json
 withCredentials: true
 
 {
-  "post":"new post 4",
+  "post":"Post 2",
   "bgColor":"#fds323",
-  "privacy":"Private",
+  "privacy":"Public",
   "gifUrl":"fsdwe",
   "profilePicture":"sfd",
   "feelings":"happy"
@@ -41,9 +41,9 @@ Accept: application/json
 withCredentials: true
 
 {
-  "post":"Post with image",
+  "post":"Post with image 1",
   "bgColor":"#fds323",
-  "privacy":"Private",
+  "privacy":"Public",
   "gifUrl":"fsdwe",
   "profilePicture":"sfd",
   "feelings":"happy",
@@ -51,7 +51,7 @@ withCredentials: true
 }
 
 ###
-PUT {{baseUrl}}/{{urlPath}}/post/6513fef0f3da4d25efbd0880
+PUT {{baseUrl}}/{{urlPath}}/post/65315daa88c749b864a03474
 Content-Type: application/json
 Accept: application/json
 withCredentials: true

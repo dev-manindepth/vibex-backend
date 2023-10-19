@@ -9,9 +9,22 @@ class FollowWorker {
     try {
       const { userId, followeeId, username, followerDocumentId } = job.data;
       await followService.addFollowerToDB(userId, followeeId, username, followerDocumentId);
+      job.progress(100);
+      done(null, job.data);
     } catch (err) {
       done(err as Error);
       log.error(err);
+    }
+  }
+  public async removeFollowerFromDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { userId, followeeId } = job.data;
+      await followService.removeFollowerFromDB(userId, followeeId);
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
     }
   }
 }

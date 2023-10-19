@@ -2,7 +2,6 @@ import { ServerError } from '@global/helpers/error-handler';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
 import Logger from 'bunyan';
-import { UserCache } from '@service/redis/user.cache';
 
 const log: Logger = config.createLogger('followCache');
 
@@ -32,6 +31,17 @@ export class FollowCache extends BaseCache {
     } catch (err) {
       log.error(err);
       throw new ServerError('Server Error. Please Try again.');
+    }
+  }
+  public async removeFollowerOrFolloweeFromCache(key: string, value: string): Promise<void> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      await this.client.LREM(key, 1, value);
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error. Try again.');
     }
   }
 }

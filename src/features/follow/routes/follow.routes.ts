@@ -1,4 +1,5 @@
 import { Add } from '@follow/controllers/follow-user';
+import { Remove } from '@follow/controllers/unfollow-user';
 import { authMiddleware } from '@global/helpers/auth-middleware';
 import express, { Router } from 'express';
 
@@ -10,6 +11,7 @@ class FollowRoutes {
   }
   public routes() {
     this.router.put('/user/follow/:followeeId', authMiddleware.checkAuthentication, Add.prototype.follower);
+    this.router.put('/user/unfollow/:followeeId', authMiddleware.checkAuthentication, Remove.prototype.follower);
     return this.router;
   }
 }
