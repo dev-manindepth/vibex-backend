@@ -1,0 +1,8 @@
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/follow/650a63b0bde9558b9df24d5a
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
