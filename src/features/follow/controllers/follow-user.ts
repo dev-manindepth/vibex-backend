@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { IFollowerData } from '@follow/interfaces/follower.interface';
+import { IFollowData } from '@follow/interfaces/follower.interface';
 import { followQueue } from '@service/queues/follow.queue';
 import { FollowCache } from '@service/redis/follow.cache';
 import { UserCache } from '@service/redis/user.cache';
@@ -30,7 +30,7 @@ export class Add {
     const cachedFollowee = await userCache.getUserDataFromCache(followeeId);
 
     const followerObjectId: ObjectId = new ObjectId();
-    const followerData: IFollowerData = Add.prototype.userData(cachedFollower);
+    const followerData: IFollowData = Add.prototype.userData(cachedFollower);
     socketIOFollowObject.emit('add follower', followerData);
 
     const addFollowerToCache: Promise<void> = followCache.saveFollowerOrFolloweeToCache(`following:${req.currentUser!.userId}`, followeeId);
@@ -48,7 +48,7 @@ export class Add {
     res.status(HTTP_STATUS.OK).json({ message: 'Following user now' });
   }
 
-  private userData(user: IUserDocument): IFollowerData {
+  private userData(user: IUserDocument): IFollowData {
     return {
       _id: new mongoose.Types.ObjectId(user._id),
       username: user.username!,

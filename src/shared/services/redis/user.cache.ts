@@ -76,7 +76,7 @@ export class UserCache extends BaseCache {
         await this.client.connect();
       }
       const userDocument: IUserDocument = (await this.client.HGETALL(`users:${userObjectId}`)) as unknown as IUserDocument;
-      const { blocked, blockedBy, notifications, social, createAt, followersCount, followingCount, postsCount } = userDocument;
+      const { blocked, blockedBy, notifications, social, createdAt, followersCount, followingCount, postsCount } = userDocument;
       userDocument.blocked = Helpers.parseJSON(`${blocked}`);
       userDocument.blockedBy = Helpers.parseJSON(`${blockedBy}`);
       userDocument.notifications = Helpers.parseJSON(`${notifications}`);
@@ -84,11 +84,10 @@ export class UserCache extends BaseCache {
       userDocument.followersCount = Helpers.parseJSON(`${followersCount}`);
       userDocument.followingCount = Helpers.parseJSON(`${followingCount}`);
       userDocument.postsCount = Helpers.parseJSON(`${postsCount}`);
-      userDocument.createAt = new Date(`${createAt}`);
+      userDocument.createdAt = new Date(`${createdAt}`);
       return userDocument;
     } catch (err) {
       throw new ServerError('Something went wrong . Please Try again');
     }
   }
 }
-

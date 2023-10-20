@@ -15,12 +15,12 @@ export interface IFollowDocument extends Document {
 
 export interface IFollower {
   _id: mongoose.Types.ObjectId | string;
-  followeeId?: IFollowerData;
-  followerId?: IFollowerData;
+  followeeId?: IFollowData;
+  followerId?: IFollowData;
   createdAt?: Date;
 }
 
-export interface IFollowerData {
+export interface IFollowData {
   avatarColor: string;
   followersCount: number;
   followingCount: number;
