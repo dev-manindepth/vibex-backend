@@ -14,6 +14,7 @@ import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import { PostSocketIO } from '@socket/post.socket';
+import { FollowSocketIO } from '@socket/follow';
 
 const log: Logger = config.createLogger('setupServer');
 const SERVER_PORT = 5000;
@@ -104,9 +105,12 @@ export class VibeXServer {
       log.info(`Server listening on PORT ${SERVER_PORT}`);
     });
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  
   private socketIOConnections(io: Server): void {
     const postSocketHandler: PostSocketIO = new PostSocketIO(io);
+    const followSocketHandler: FollowSocketIO = new FollowSocketIO(io);
+
     postSocketHandler.listen();
+    followSocketHandler.listen();
   }
 }

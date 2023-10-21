@@ -23,7 +23,7 @@ export interface IUserDocument extends Document {
   bgImageVersion: string;
   bgImageId: string;
   profilePicture: string;
-  createAt?: Date;
+  createdAt?: Date;
 }
 export interface IResetPasswordParams {
   username: string;

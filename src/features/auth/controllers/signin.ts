@@ -40,7 +40,7 @@ export class Signin {
       email: existingAuthUser!.email,
       avatarColor: existingAuthUser!.avatarColor,
       uId: existingAuthUser!.uId,
-      createAt: existingAuthUser!.createdAt
+      createdAt: existingAuthUser!.createdAt
     } as IUserDocument;
     res.status(HTTP_STATUS.OK).json({ message: 'user login successful', user: userDocument, token: userToken });
   }

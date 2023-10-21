@@ -26,12 +26,12 @@ Accept: application/json
 withCredentials: true
 
 {
-  "userTo": "650fa3f16360a4840ff1dbef",
-  "postId": "6513fadf51060f599535e74d",
-  "type": "happy",
-  "previousReaction": "",
-  "postReactions": {"like":0,"love":0,"happy":1,"sad":0,"wow":0,"angry":0},
-  "profilePicture": "https://res.cloudinary.com/df5lu39z1/v1695523831/650fa3f16360a4840ff1dbef"
+  "userTo": "65315a6588c749b864a0345d",
+  "postId": "65315f4488c749b864a03487",
+  "type": "sad",
+  "previousReaction": "happy",
+  "postReactions": {"like":0,"love":0,"happy":0,"sad":1,"wow":0,"angry":0},
+  "profilePicture": "https://res.cloudinary.com/df5lu39z1/v1697733224/65315a6588c749b864a0345d"
 }
 
 ###
