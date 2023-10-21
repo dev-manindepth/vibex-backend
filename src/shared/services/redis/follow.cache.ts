@@ -6,6 +6,7 @@ import { IUserDocument } from '@user/interfaces/user.interface';
 import Logger from 'bunyan';
 import { UserCache } from '@service/redis/user.cache';
 import mongoose from 'mongoose';
+import { Helpers } from '@global/helpers/helpers';
 
 const log: Logger = config.createLogger('followCache');
 const userCache: UserCache = new UserCache();
@@ -76,6 +77,27 @@ export class FollowCache extends BaseCache {
     } catch (err) {
       log.error(err);
       throw new ServerError('Server Error. Try again.');
+    }
+  }
+  public async updateBlockedUserPropInCache(userId: string, prop: string, value: string, type: 'block' | 'unblock'): Promise<void> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const response: string = (await this.client.HGET(`users:${userId}`, prop)) as string;
+      const mulit: ReturnType<typeof this.client.multi> = this.client.multi();
+      let blocked: string[] = Helpers.parseJSON(response);
+      if (type == 'block') {
+        blocked = [...blocked, value];
+      } else {
+        blocked = blocked.filter((id: string) => id !== value);
+        blocked = [...blocked];
+      }
+      mulit.HSET(`users:${userId}`, prop, JSON.stringify(blocked));
+      await mulit.exec();
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error. Try again.');
     }
   }
 }

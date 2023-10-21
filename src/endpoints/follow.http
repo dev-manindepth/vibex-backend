@@ -18,3 +18,15 @@ PUT {{baseUrl}}/{{urlPath}}/user/unfollow/65315c8488c749b864a0346d
 Content-Type: application/json
 Accept: application/json
 withCredentials: true
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/block/65315c5488c749b864a03466
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/unblock/65315c8488c749b864a0346d
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
