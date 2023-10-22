@@ -10,6 +10,7 @@ import HTTP_STATUS from 'http-status-codes';
 import { UploadApiResponse } from 'cloudinary';
 import { uploads, videoUpload } from '@global/helpers/cloudinary-upload';
 import { BadRequestError } from '@global/helpers/error-handler';
+import { imageQueue } from '@service/queues/image.queue';
 
 const postCache: PostCache = new PostCache();
 export class Create {
@@ -84,6 +85,11 @@ export class Create {
     });
     postQueue.addPostJob('addPostToDB', { userId: req.currentUser!.userId, createdPost });
     // TODO ADD image to assets queue
+    imageQueue.addImageJob('addImageToDB', {
+      userId: req.currentUser!.userId,
+      imgId: imageUploadResult.public_id,
+      imgVersion: imageUploadResult.version.toString()
+    });
     res.status(HTTP_STATUS.CREATED).json({ message: 'post with image created successfully' });
   }
   public async postWithVideo(req: Request, res: Response): Promise<void> {
