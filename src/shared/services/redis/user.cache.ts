@@ -2,9 +2,10 @@ import { ServerError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/helpers';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
-import { IUserDocument } from '@user/interfaces/user.interface';
+import { INotificationSettings, ISocialLinks, IUserDocument } from '@user/interfaces/user.interface';
 import Logger from 'bunyan';
 
+type UserPropValue = string | ISocialLinks | INotificationSettings;
 const log: Logger = config.createLogger('userCache');
 export class UserCache extends BaseCache {
   constructor() {
@@ -88,6 +89,19 @@ export class UserCache extends BaseCache {
       return userDocument;
     } catch (err) {
       throw new ServerError('Something went wrong . Please Try again');
+    }
+  }
+  public async updateSingleUserPropInCache(userId: string, prop: string, value: UserPropValue): Promise<IUserDocument | null> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      await this.client.HSET(`users:${userId}`, prop, JSON.stringify(value));
+      const updateUser: IUserDocument = (await this.getUserDataFromCache(userId)) as IUserDocument;
+      return updateUser;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error. Try again.');
     }
   }
 }
