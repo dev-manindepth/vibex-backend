@@ -1,0 +1,9 @@
+
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+###
+PUT {{baseUrl}}/{{urlPath}}/notification/6533c7fea3b81376f9ef9f33
+Content-Type: application/json
+Accept: application/json
+withCredentials: true

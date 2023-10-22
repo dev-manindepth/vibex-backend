@@ -15,6 +15,7 @@ import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
 import { PostSocketIO } from '@socket/post.socket';
 import { FollowSocketIO } from '@socket/follow';
+import { NotificationSocketIO } from '@socket/notification';
 
 const log: Logger = config.createLogger('setupServer');
 const SERVER_PORT = 5000;
@@ -105,12 +106,14 @@ export class VibeXServer {
       log.info(`Server listening on PORT ${SERVER_PORT}`);
     });
   }
-  
+
   private socketIOConnections(io: Server): void {
     const postSocketHandler: PostSocketIO = new PostSocketIO(io);
     const followSocketHandler: FollowSocketIO = new FollowSocketIO(io);
+    const notificationSocketHandler: NotificationSocketIO = new NotificationSocketIO();
 
     postSocketHandler.listen();
     followSocketHandler.listen();
+    notificationSocketHandler.listen(io);
   }
 }

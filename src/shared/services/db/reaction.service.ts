@@ -1,22 +1,25 @@
 import { Helpers } from '@global/helpers/helpers';
+import { INotificationDocument, INotificationTemplate } from '@notification/interfaces/notification.interface';
+import { NotificationModel } from '@notification/models/notification.model';
 import { IPostDocument } from '@post/interfaces/post.interface';
 import { PostModel } from '@post/models/post.model';
 import { IQueryReaction, IReactionDocument, IReactionJob } from '@root/features/reactions/interfaces/reaction.interface';
 import { ReactionModel } from '@root/features/reactions/models/reaction.model';
+import { notificationTemplate } from '@service/emails/templates/notification/notification-template';
+import { mailQueue } from '@service/queues/email.queue';
 import { UserCache } from '@service/redis/user.cache';
+import { socketIONotificationObject } from '@socket/notification';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import mongoose from 'mongoose';
 
 const userCache: UserCache = new UserCache();
 class ReactionService {
   public async addReactionDataToDB(reactionData: IReactionJob): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { postId, userTo, userFrom, username, type, previousReaction, reactionObject } = reactionData;
 
     if (previousReaction) {
       delete reactionObject?._id;
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updatedReaction: [IUserDocument, IReactionDocument, IPostDocument] = (await Promise.all([
       userCache.getUserDataFromCache(`${userTo}`),
       ReactionModel.replaceOne({ postId, type: previousReaction, username }, reactionObject, { upsert: true }),
@@ -32,6 +35,36 @@ class ReactionService {
       )
     ])) as unknown as [IUserDocument, IReactionDocument, IPostDocument];
     // send reactions notifications
+    if (updatedReaction[0].notifications.reactions && userTo !== userFrom) {
+      const notificationModel: INotificationDocument = new NotificationModel();
+      const notifications = await notificationModel.insertNotification({
+        userFrom: userFrom as string,
+        userTo: userTo as string,
+        message: `${username} reacted to your post.`,
+        notificationType: 'reactions',
+        entityId: new mongoose.Types.ObjectId(postId),
+        createdItemId: new mongoose.Types.ObjectId(updatedReaction[1]._id!),
+        createdAt: new Date(),
+        comment: '',
+        post: updatedReaction[2].post,
+        imgId: updatedReaction[2].imgId!,
+        imgVersion: updatedReaction[2].imgVersion!,
+        gifUrl: updatedReaction[2].gifUrl!,
+        reaction: type!
+      });
+      socketIONotificationObject.emit('insert notification', notifications, { userTo });
+      const templateParams: INotificationTemplate = {
+        username: updatedReaction[0].username!,
+        message: `${username} reacted to your post`,
+        header: 'Post Reaction Notification'
+      };
+      const template: string = notificationTemplate.notificationMessageTemplate(templateParams);
+      mailQueue.addEmailJob('reactionsEmail', {
+        receiverEmail: updatedReaction[0].email!,
+        template,
+        subject: 'Post reaction notification'
+      });
+    }
   }
   public async removeReactionDataFromDB(reactionData: IReactionJob): Promise<void> {
     const { postId, previousReaction, username } = reactionData;
