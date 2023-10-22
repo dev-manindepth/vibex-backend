@@ -1,6 +1,7 @@
 import { IFileImageDocuement } from '@image/interfaces/image.interface';
 import { ImageModel } from '@image/models/image.model';
 import { UserModel } from '@user/models/user.schema';
+import mongoose from 'mongoose';
 
 class ImageService {
   public async addUserProfileImageToDB(userId: string, url: string, imgId: string, imgVersion: string): Promise<void> {
@@ -31,6 +32,14 @@ class ImageService {
   }
   public async removeImageFromDB(imageId: string): Promise<void> {
     await ImageModel.deleteOne({ _id: imageId });
+  }
+  public async getImages(userId: string): Promise<IFileImageDocuement[]> {
+    const images: IFileImageDocuement[] = await ImageModel.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(userId) }
+      }
+    ]);
+    return images;
   }
 }
 export const imageService: ImageService = new ImageService();
