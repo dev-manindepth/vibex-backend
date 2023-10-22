@@ -3,6 +3,7 @@ import { uploads, videoUpload } from '@global/helpers/cloudinary-upload';
 import { BadRequestError } from '@global/helpers/error-handler';
 import { IPostDocument } from '@post/interfaces/post.interface';
 import { postSchema, postWithImageSchema, postWithVideoSchema } from '@post/schemas/post.schema';
+import { imageQueue } from '@service/queues/image.queue';
 import { postQueue } from '@service/queues/post.queue';
 import { PostCache } from '@service/redis/post.cache';
 import { socketIOPostObject } from '@socket/post.socket';
@@ -99,6 +100,11 @@ export class Update {
     postQueue.addPostJob('updatePostInDB', { postId, updatedPost });
     if (image) {
       // TODO ADD image to image queue
+      imageQueue.addImageJob('addImageToDB', {
+        userId: req.currentUser!.userId,
+        imgId: uploadResult.public_id,
+        imgVersion: uploadResult.version.toString()
+      });
     } else if (video) {
       // TODO ADD video to video queue
     }
