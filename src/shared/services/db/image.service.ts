@@ -1,3 +1,4 @@
+import { IFileImageDocuement } from '@image/interfaces/image.interface';
 import { ImageModel } from '@image/models/image.model';
 import { UserModel } from '@user/models/user.schema';
 
@@ -23,6 +24,13 @@ class ImageService {
   public async addBackgroundImageToDB(userId: string, imgId: string, imgVersion: string): Promise<void> {
     await UserModel.updateOne({ _id: userId }, { $set: { bgImageId: imgId, bgImageVersion: imgVersion } });
     await this.addImage(userId, imgId, imgVersion, 'background');
+  }
+  public async getImageByBackgroundImageId(bgImageId: string): Promise<IFileImageDocuement> {
+    const image: IFileImageDocuement = (await ImageModel.findOne({ _id: bgImageId })) as IFileImageDocuement;
+    return image;
+  }
+  public async removeImageFromDB(imageId: string): Promise<void> {
+    await ImageModel.deleteOne({ _id: imageId });
   }
 }
 export const imageService: ImageService = new ImageService();
