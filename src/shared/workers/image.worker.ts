@@ -16,5 +16,16 @@ class ImageWorker {
       done(err as Error);
     }
   }
+  public async updateBGImageInDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { userId, imgId, imgVersion } = job.data;
+      await imageService.addBackgroundImageToDB(userId, imgId, imgVersion);
+      job.progress(100);
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
 }
 export const imageWorker: ImageWorker = new ImageWorker();

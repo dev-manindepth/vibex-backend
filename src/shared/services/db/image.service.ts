@@ -20,5 +20,9 @@ class ImageService {
       imgId
     });
   }
+  public async addBackgroundImageToDB(userId: string, imgId: string, imgVersion: string): Promise<void> {
+    await UserModel.updateOne({ _id: userId }, { $set: { bgImageId: imgId, bgImageVersion: imgVersion } });
+    await this.addImage(userId,imgId,imgVersion,'background');
+  }
 }
 export const imageService: ImageService = new ImageService();

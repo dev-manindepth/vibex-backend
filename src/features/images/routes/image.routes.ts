@@ -10,6 +10,7 @@ class ImageRoute {
   }
   public routes() {
     this.router.post('/image/profile', authMiddleware.checkAuthentication, Add.prototype.profileImage);
+    this.router.post('/image/background', authMiddleware.checkAuthentication, Add.prototype.backgroundImage);
     return this.router;
   }
 }
