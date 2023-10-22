@@ -50,6 +50,9 @@ class NotificationService {
   public async updateNotification(notificationId: string) {
     await NotificationModel.updateOne({ _id: notificationId }, { $set: { read: true } });
   }
+  public async deleteNotification(notificationId: string): Promise<void> {
+    await NotificationModel.deleteOne({ _id: notificationId });
+  }
 }
 
 export const notificationService: NotificationService = new NotificationService();

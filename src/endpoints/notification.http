@@ -7,3 +7,10 @@ PUT {{baseUrl}}/{{urlPath}}/notification/6533c7fea3b81376f9ef9f33
 Content-Type: application/json
 Accept: application/json
 withCredentials: true
+
+
+###
+DELETE  {{baseUrl}}/{{urlPath}}/notification/6533c8c6a3b81376f9ef9f3b
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
