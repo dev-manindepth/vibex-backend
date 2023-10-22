@@ -7,6 +7,7 @@ import { Application } from 'express';
 import { reactionRoute } from './features/reactions/routes/reaction.route';
 import { commentRoute } from '@comment/routes/comments.routes';
 import { followRoutes } from '@follow/routes/follow.routes';
+import { notificationRoute } from '@notification/routes/notification.routes';
 
 const BASE_PATH = '/api/v1';
 export default (app: Application) => {
@@ -19,6 +20,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, authMiddleware.verifyUser, reactionRoute.routes());
     app.use(BASE_PATH, authMiddleware.verifyUser, commentRoute.routes());
     app.use(BASE_PATH, authMiddleware.verifyUser, followRoutes.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, notificationRoute.routes());
   };
   routes();
 };

@@ -42,7 +42,11 @@ export class ReactionCache extends BaseCache {
       const reactionListCollection: string[] = await this.client.LRANGE(`reactions:${postId}`, 0, -1);
       const mulit: ReturnType<typeof this.client.multi> = this.client.multi();
       const userPreviousReaction: IReactionDocument = this.getPreviousReaction(reactionListCollection, username) as IReactionDocument;
-      mulit.LREM(`reactions:${postId}`, 1, JSON.stringify(userPreviousReaction));
+      console.log(userPreviousReaction);
+      if (userPreviousReaction) {
+        mulit.LREM(`reactions:${postId}`, 1, JSON.stringify(userPreviousReaction));
+      }
+
       await mulit.exec();
 
       await this.client.HSET(`posts:${postId}`, 'reactions', JSON.stringify(postReactions));
@@ -55,6 +59,7 @@ export class ReactionCache extends BaseCache {
   private getPreviousReaction(reactionCollectionList: string[], username: string): IReactionDocument | undefined {
     const reactionDocumentCollection: IReactionDocument[] = [];
     for (const reaction of reactionCollectionList) {
+      console.table(Helpers.parseJSON(reaction));
       reactionDocumentCollection.push(Helpers.parseJSON(reaction) as IReactionDocument);
     }
     return reactionDocumentCollection.find((reaction: IReactionDocument) => reaction.username === username);
