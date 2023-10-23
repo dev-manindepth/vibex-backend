@@ -9,6 +9,7 @@ import { commentRoute } from '@comment/routes/comments.routes';
 import { followRoutes } from '@follow/routes/follow.routes';
 import { notificationRoute } from '@notification/routes/notification.routes';
 import { imageRoute } from '@image/routes/image.routes';
+import { chatRoutes } from '@chat/routes/chat.routes';
 
 const BASE_PATH = '/api/v1';
 export default (app: Application) => {
@@ -23,6 +24,7 @@ export default (app: Application) => {
     app.use(BASE_PATH, authMiddleware.verifyUser, followRoutes.routes());
     app.use(BASE_PATH, authMiddleware.verifyUser, notificationRoute.routes());
     app.use(BASE_PATH, authMiddleware.checkAuthentication, imageRoute.routes());
+    app.use(BASE_PATH, authMiddleware.verifyUser, chatRoutes.routes());
   };
   routes();
 };

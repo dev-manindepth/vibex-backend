@@ -9,6 +9,7 @@ import { IReactionJob } from '@reaction/interfaces/reaction.interface';
 import { ICommentJob } from '@comment/interfaces/comments.interface';
 import { IBlockedUserJobData, IFollowerJobData } from '@follow/interfaces/follower.interface';
 import { INotificationJobData } from '@notification/interfaces/notification.interface';
+import { IChatJobData, IMessageData } from '@root/features/chat/interfaces/chat.interace';
 
 let bullAdapters: BullAdapter[] = [];
 export let serverAdapter: ExpressAdapter;
@@ -21,7 +22,9 @@ type IBaseJob =
   | ICommentJob
   | IFollowerJobData
   | IBlockedUserJobData
-  | INotificationJobData;
+  | INotificationJobData
+  | IChatJobData
+  | IMessageData;
 export abstract class BaseQueue {
   queue: Queue.Queue;
   log: Logger;
