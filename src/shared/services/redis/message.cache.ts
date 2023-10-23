@@ -61,6 +61,26 @@ export class MessageCache extends BaseCache {
       throw new ServerError('Server error.Try again.');
     }
   }
+  public async removeChatUsersFromCache(chatUser: IChatUsers): Promise<IChatUsers[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const chatUsersList: IChatUsers[] = await this.getChatUsersList();
+      const userIndex: number = chatUsersList.findIndex((user) => JSON.stringify(user) == JSON.stringify(chatUser));
+      let chatUsers: IChatUsers[] = [];
+      if (userIndex > -1) {
+        await this.client.LREM('chatUsers', userIndex, JSON.stringify(chatUser));
+        chatUsers = await this.getChatUsersList();
+      } else {
+        chatUsers = chatUsersList;
+      }
+      return chatUsers;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error. Try again.');
+    }
+  }
   public async getChatUsersList(): Promise<IChatUsers[]> {
     const chatUsersList: IChatUsers[] = [];
     const chatUsers = await this.client.LRANGE('chatUsers', 0, -1);

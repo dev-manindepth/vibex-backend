@@ -18,3 +18,25 @@ withCredentials: true
   "isRead":false,
   "selectedImage":""
 }
+
+###
+POST {{baseUrl}}/{{urlPath}}/chat/message/add-chat-users
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "sender":"65315a6588c749b864a0345d",
+  "receiver":"65315c8488c749b864a0346d"
+}
+
+###
+DELETE  {{baseUrl}}/{{urlPath}}/chat/message/remove-chat-users
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "sender":"65315a6588c749b864a0345d",
+  "receiver":"65315c8488c749b864a0346d"
+}
