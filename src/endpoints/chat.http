@@ -40,3 +40,14 @@ withCredentials: true
   "sender":"65315a6588c749b864a0345d",
   "receiver":"65315c8488c749b864a0346d"
 }
+
+###
+PUT {{baseUrl}}/{{urlPath}}/chat/message/mark-as-read
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "senderId":"65315a6588c749b864a0345d",
+  "receiverId":"65315c8488c749b864a0346d"
+}

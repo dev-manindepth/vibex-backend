@@ -1,4 +1,4 @@
-import { IChatUsers, IMessageData } from '@chat/interfaces/chat.interace';
+import { IChatList, IChatUsers, IMessageData } from '@chat/interfaces/chat.interace';
 import { ServerError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/helpers';
 import { config } from '@root/config';
@@ -88,5 +88,29 @@ export class MessageCache extends BaseCache {
       chatUsersList.push(Helpers.parseJSON(user));
     }
     return chatUsersList;
+  }
+  public async updateChatMessages(senderId: string, receiverId: string): Promise<IMessageData> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      console.log('sender ',senderId,receiverId);
+      const userChatList: string[] = await this.client.LRANGE(`chatList:${senderId}`, 0, -1);
+      const receiver: string = userChatList.find((user) => user.includes(receiverId)) as string;
+      const parsedReceiver: IChatList = Helpers.parseJSON(receiver);
+      const messages: string[] = await this.client.LRANGE(`messages:${parsedReceiver.conversationId}`, 0, -1);
+      const unreadMessages: string[] = messages.filter((message) => !Helpers.parseJSON(message).isRead);
+      for (const unreadMessage of unreadMessages) {
+        const chatItem = Helpers.parseJSON(unreadMessage) as IMessageData;
+        chatItem.isRead = true;
+        const index = messages.findIndex((message) => message.includes(`${chatItem._id}`));
+        await this.client.LSET(`messages:${chatItem.conversationId}`, index, JSON.stringify(chatItem));
+      }
+      const lastMessage: string = (await this.client.LINDEX(`messages:${parsedReceiver.conversationId}`, -1)) as string;
+      return Helpers.parseJSON(lastMessage) as IMessageData;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
   }
 }
