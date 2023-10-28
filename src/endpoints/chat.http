@@ -65,6 +65,19 @@ withCredentials: true
 }
 
 ###
+PUT {{baseUrl}}/{{urlPath}}/chat/message/reaction
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "conversationId":"65362d9ffab04cc6de94d373",
+  "messageId":"65362e39fab04cc6de94d379",
+  "reaction":"sad",
+  "type":"remove"
+}
+
+###
 DELETE  {{baseUrl}}/{{urlPath}}/chat/message/mark-as-deleted/65362d0bfab04cc6de94d36e/65315a6588c749b864a0345d/65315c8488c749b864a0346d/deleteForEveryone
 Content-Type: application/json
 Accept: application/json

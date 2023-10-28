@@ -98,5 +98,17 @@ class ChatService {
       await MessageModel.updateOne({ _id: messageId }, { $set: { deleteForEveryone: true, deleteForMe: true } });
     }
   }
+  public async updateMessageReaction(messageId: ObjectId, senderName: string, reaction: string, type: 'add' | 'remove') {
+    if (type == 'add') {
+      const message: IMessageData = (await MessageModel.findOne({ _id: messageId })) as IMessageData;
+      if (message) {
+        const messageReaction = message.reaction.filter((msg) => msg.senderName !== senderName);
+        message.reaction = [...messageReaction, { senderName, type: reaction }];
+        await MessageModel.updateOne({ _id: messageId }, { $set: { reaction: message.reaction } }).exec();
+      }
+    } else if (type == 'remove') {
+      await MessageModel.updateOne({ _id: messageId }, { $pull: { reaction: { senderName } } }).exec();
+    }
+  }
 }
 export const chatService: ChatService = new ChatService();

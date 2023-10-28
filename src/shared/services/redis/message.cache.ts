@@ -1,6 +1,7 @@
 import { IChatList, IChatUsers, IGetMessageFromCache, IMessageData } from '@chat/interfaces/chat.interace';
 import { ServerError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/helpers';
+import { IReaction } from '@reaction/interfaces/reaction.interface';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
 import Logger from 'bunyan';
@@ -183,5 +184,38 @@ export class MessageCache extends BaseCache {
     const message: string = messages.find((message) => message.includes(messageId)) as string;
     const index: number = messages.findIndex((message) => message.includes(messageId));
     return { index, message, receiver: parsedReceiver };
+  }
+  public async updateMessageReaction(
+    conversationId: string,
+    messageId: string,
+    reaction: string,
+    senderName: string,
+    type: string
+  ): Promise<IMessageData> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const rawMessages: string[] = await this.client.LRANGE(`messages:${conversationId}`, 0, -1);
+      const message: string = rawMessages.find((message) => message.includes(messageId)) as string;
+      const messageIndex: number = rawMessages.findIndex((message) => message.includes(messageId));
+      const parsedMessage: IMessageData = Helpers.parseJSON(message);
+      const reactions: IReaction[] = [];
+      if (parsedMessage) {
+        parsedMessage.reaction = parsedMessage.reaction.filter((message: IReaction) => message.senderName !== senderName);
+        if (type === 'add') {
+          reactions.push({ senderName, type: reaction });
+          parsedMessage.reaction = [...parsedMessage.reaction, ...reactions];
+          await this.client.LSET(`messages:${conversationId}`, messageIndex, JSON.stringify(parsedMessage));
+        } else if (type === 'remove') {
+          await this.client.LSET(`messages:${conversationId}`, messageIndex, JSON.stringify(parsedMessage));
+        }
+      }
+      const updatedMessage: string = (await this.client.LINDEX(`messages:${conversationId}`, messageIndex)) as string;
+      return Helpers.parseJSON(updatedMessage) as IMessageData;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
   }
 }
