@@ -18,6 +18,7 @@ import { FollowSocketIO } from '@socket/follow';
 import { NotificationSocketIO } from '@socket/notification';
 import { ImageSocketIO } from '@socket/image';
 import { ChatSocketIO } from '@socket/chat';
+import { UserSocketIO } from '@socket/user';
 
 const log: Logger = config.createLogger('setupServer');
 const SERVER_PORT = 5000;
@@ -114,12 +115,14 @@ export class VibeXServer {
     const followSocketHandler: FollowSocketIO = new FollowSocketIO(io);
     const notificationSocketHandler: NotificationSocketIO = new NotificationSocketIO();
     const imageSocketHandler: ImageSocketIO = new ImageSocketIO();
-    const chatSocketHandler:ChatSocketIO = new ChatSocketIO();
+    const chatSocketHandler: ChatSocketIO = new ChatSocketIO(io);
+    const userSocketHandler: UserSocketIO = new UserSocketIO(io);
 
     postSocketHandler.listen();
     followSocketHandler.listen();
     notificationSocketHandler.listen(io);
     imageSocketHandler.listen(io);
-    chatSocketHandler.listen(io);
+    chatSocketHandler.listen();
+    userSocketHandler.listen();
   }
 }
