@@ -1,4 +1,5 @@
 import { Add } from '@chat/controllers/add-chat-message';
+import { Delete } from '@chat/controllers/delete-chat-message';
 import { Update } from '@chat/controllers/update-chat-message';
 import { authMiddleware } from '@global/helpers/auth-middleware';
 import express, { Router } from 'express';
@@ -13,6 +14,11 @@ class ChatRoutes {
     this.router.post('/chat/message/add-chat-users', authMiddleware.checkAuthentication, Add.prototype.addChatUsers);
     this.router.delete('/chat/message/remove-chat-users', authMiddleware.checkAuthentication, Add.prototype.removeChatUsers);
     this.router.put('/chat/message/mark-as-read', authMiddleware.checkAuthentication, Update.prototype.message);
+    this.router.delete(
+      '/chat/message/mark-as-deleted/:messageId/:senderId/:receiverId/:type',
+      authMiddleware.checkAuthentication,
+      Delete.prototype.message
+    );
     return this.router;
   }
 }

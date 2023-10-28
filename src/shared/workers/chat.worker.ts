@@ -15,13 +15,24 @@ class ChatWorker {
       done(err as Error);
     }
   }
-  public async markMessagesAsReadInDB(job:Job,done:DoneCallback):Promise<void>{
-    try{
-      const {senderId,receiverId} = job.data;
-      await chatService.markMessagesAsReadInDB(senderId,receiverId);
+  public async markMessagesAsReadInDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { senderId, receiverId } = job.data;
+      await chatService.markMessagesAsReadInDB(senderId, receiverId);
       job.progress(100);
-      done(null,job.data);
-    }catch(err){
+      done(null, job.data);
+    } catch (err) {
+      log.error(err);
+      done(err as Error);
+    }
+  }
+  public async markMessageAsDeletedInDB(job: Job, done: DoneCallback): Promise<void> {
+    try {
+      const { messageId, type } = job.data;
+      await chatService.markMessageAsDeletedInDB(messageId, type);
+      done(null, job.data);
+      job.progress(100);
+    } catch (err) {
       log.error(err);
       done(err as Error);
     }

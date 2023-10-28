@@ -1,4 +1,4 @@
-import { IChatList, IChatUsers, IMessageData } from '@chat/interfaces/chat.interace';
+import { IChatList, IChatUsers, IGetMessageFromCache, IMessageData } from '@chat/interfaces/chat.interace';
 import { ServerError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/helpers';
 import { config } from '@root/config';
@@ -94,7 +94,7 @@ export class MessageCache extends BaseCache {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
-      console.log('sender ',senderId,receiverId);
+      console.log('sender ', senderId, receiverId);
       const userChatList: string[] = await this.client.LRANGE(`chatList:${senderId}`, 0, -1);
       const receiver: string = userChatList.find((user) => user.includes(receiverId)) as string;
       const parsedReceiver: IChatList = Helpers.parseJSON(receiver);
@@ -112,5 +112,35 @@ export class MessageCache extends BaseCache {
       log.error(err);
       throw new ServerError('Server Error.Try again.');
     }
+  }
+  public async markMessageAsDeleted(senderId: string, receiverId: string, messageId: string, type: string): Promise<IMessageData> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const { index, message, receiver } = await this.getMesssage(senderId, receiverId, messageId);
+      const chatItem = Helpers.parseJSON(message) as IMessageData;
+      if (type == 'deleteForMe') {
+        chatItem.deleteForMe = true;
+      } else if (type == 'deleteForEveryone') {
+        chatItem.deleteForEveryone = true;
+        chatItem.deleteForMe = true;
+      }
+      await this.client.LSET(`messages:${receiver.conversationId}`, index, JSON.stringify(chatItem));
+      const lastMessage: string = (await this.client.LINDEX(`messages:${receiver.conversationId}`, index)) as string;
+      return Helpers.parseJSON(lastMessage) as IMessageData;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
+  }
+  private async getMesssage(senderId: string, receiverId: string, messageId: string): Promise<IGetMessageFromCache> {
+    const userChatList: string[] = await this.client.LRANGE(`chatList:${senderId}`, 0, -1);
+    const receiver: string = userChatList.find((userChat) => userChat.includes(receiverId)) as string;
+    const parsedReceiver: IChatList = Helpers.parseJSON(receiver);
+    const messages: string[] = await this.client.LRANGE(`messages:${parsedReceiver.conversationId}`, 0, -1);
+    const message: string = messages.find((message) => message.includes(messageId)) as string;
+    const index: number = messages.findIndex((message) => message.includes(messageId));
+    return { index, message, receiver: parsedReceiver };
   }
 }

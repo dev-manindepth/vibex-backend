@@ -33,5 +33,12 @@ class ChatService {
     };
     await MessageModel.updateMany(query, { $set: { isRead: true } });
   }
+  public async markMessageAsDeletedInDB(messageId: ObjectId, type: string): Promise<void> {
+    if (type == 'deleteForMe') {
+      await MessageModel.updateOne({ _id: messageId }, { $set: { deleteForMe: true } });
+    } else if (type == 'deleteForEveryone') {
+      await MessageModel.updateOne({ _id: messageId }, { $set: { deleteForEveryone: true, deleteForMe: true } });
+    }
+  }
 }
 export const chatService: ChatService = new ChatService();

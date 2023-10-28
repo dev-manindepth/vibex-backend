@@ -51,3 +51,9 @@ withCredentials: true
   "senderId":"65315a6588c749b864a0345d",
   "receiverId":"65315c8488c749b864a0346d"
 }
+
+###
+DELETE  {{baseUrl}}/{{urlPath}}/chat/message/mark-as-deleted/65362d0bfab04cc6de94d36e/65315a6588c749b864a0345d/65315c8488c749b864a0346d/deleteForEveryone
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
