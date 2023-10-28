@@ -11,6 +11,47 @@ export class MessageCache extends BaseCache {
   constructor() {
     super('messageCache');
   }
+  public async getUserConversationList(currentUserId: string): Promise<IMessageData[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const userChatList: string[] = await this.client.LRANGE(`chatList:${currentUserId}`, 0, -1);
+      const conversationChatList: IMessageData[] = [];
+      for (const userChat of userChatList) {
+        const chatItem: IChatList = Helpers.parseJSON(userChat) as IChatList;
+        const lastMessage: string = (await this.client.LINDEX(`messages:${chatItem.conversationId}`, -1)) as string;
+        conversationChatList.push(Helpers.parseJSON(lastMessage));
+      }
+      return conversationChatList;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error.Try again.');
+    }
+  }
+  public async getChatMessagesFromCache(senderId: string, receiverId: string): Promise<IMessageData[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const userChatList: string[] = await this.client.LRANGE(`chatList:${senderId}`, 0, -1);
+      const receiver: string = userChatList.find((userChat) => userChat.includes(receiverId)) as string;
+      const parsedReceiver: IChatList = Helpers.parseJSON(receiver) as IChatList;
+      if (parsedReceiver) {
+        const userMessages: string[] = await this.client.LRANGE(`messages:${parsedReceiver.conversationId}`, 0, -1);
+        const chatMessages: IMessageData[] = [];
+        for (const message of userMessages) {
+          chatMessages.push(Helpers.parseJSON(message));
+        }
+        return chatMessages;
+      } else {
+        return [];
+      }
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
+  }
   public async addChatListToCache(senderId: string, receiverId: string, conversationId: string): Promise<void> {
     try {
       if (!this.client.isOpen) {
