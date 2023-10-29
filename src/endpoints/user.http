@@ -73,3 +73,16 @@ withCredentials: true
   "instagram":"https://instagram.com/manish",
   "youtube":"https://youtube.com/manish"
 }
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/profile/settings
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "messages":false,
+  "reactions":true,
+  "comments":false,
+  "follows":false
+}
