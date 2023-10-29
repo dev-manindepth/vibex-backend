@@ -1,7 +1,8 @@
-import { IUserDocument } from '@user/interfaces/user.interface';
+import { ISearchUser, IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.schema';
 import mongoose from 'mongoose';
 import { followService } from '@service/db/follow.service';
+import { AuthModel } from '@auth/models/auth.schema';
 
 class UserService {
   public async createUser(data: IUserDocument): Promise<void> {
@@ -99,7 +100,7 @@ class UserService {
       },
       {
         $project: {
-          authId:0,
+          authId: 0,
           authUser: 0,
           __v: 0
         }
@@ -113,6 +114,29 @@ class UserService {
       }
     }
     return randomUsers;
+  }
+  public async searchUsers(regex: RegExp): Promise<ISearchUser[]> {
+    const users = await AuthModel.aggregate([
+      {
+        $match: { username: regex }
+      },
+      {
+        $lookup: { from: 'User', localField: '_id', foreignField: 'authId', as: 'user' }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $project: {
+          _id: '$user._id',
+          username: 1,
+          email: 1,
+          avatarColor: 1,
+          profilePicture: 1
+        }
+      }
+    ]);
+    return users;
   }
   private aggregateProject() {
     return {
