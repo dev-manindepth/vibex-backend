@@ -173,6 +173,30 @@ export class PostCache extends BaseCache {
       throw new ServerError('Server error. Try again.');
     }
   }
+  public async getUserPostsFromCache(key: string, uId: number): Promise<IPostDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const postIdList: string[] = await this.client.ZRANGE(key, uId, uId, { REV: true, BY: 'SCORE' });
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const postId of postIdList) {
+        multi.HGETALL(`posts:${postId}`);
+      }
+      const postsList: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
+      const posts: IPostDocument[] = [];
+      for (const post of postsList as IPostDocument[]) {
+        post.commentsCount = Helpers.parseJSON(`${post.commentsCount}`) as number;
+        post.reactions = Helpers.parseJSON(`${post.reactions}`) as IReactions;
+        post.createdAt = new Date(Helpers.parseJSON(`${post.createdAt}`)) as Date;
+        posts.push(post);
+      }
+      return posts;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
+  }
   public async updatePostInCache(postId: string, data: IPostDocument): Promise<IPostDocument> {
     if (!this.client.isOpen) {
       this.client.connect();
