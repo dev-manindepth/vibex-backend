@@ -47,3 +47,29 @@ withCredentials: true
   "newPassword": "12345",
   "confirmPassword": "12345"
 }
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/profile/basic-info
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "quote":"The only limit to our realization of tomorrow will be our doubts of today.",
+  "work":"amazon",
+  "school":"SVSN",
+  "location":"Bihar"
+}
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/profile/social-links
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "facebook":"https://facebook.com/manish",
+  "twitter":"https://twitter.com/manish",
+  "instagram":"https://instagram.com/manish",
+  "youtube":"https://youtube.com/manish"
+}

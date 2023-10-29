@@ -1,4 +1,4 @@
-import { ISearchUser, IUserDocument } from '@user/interfaces/user.interface';
+import { IBasicInfo, ISearchUser, ISocialLinks, IUserDocument } from '@user/interfaces/user.interface';
 import { UserModel } from '@user/models/user.schema';
 import mongoose from 'mongoose';
 import { followService } from '@service/db/follow.service';
@@ -140,6 +140,22 @@ class UserService {
   }
   public async updatePassword(username: string, hashedPassword: string): Promise<void> {
     await AuthModel.updateOne({ username }, { $set: { password: hashedPassword } }).exec();
+  }
+  public async updateUserInfo(userId: string, info: IBasicInfo): Promise<void> {
+    await UserModel.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          work: info['work'],
+          school: info['school'],
+          quote: info['quote'],
+          location: info['location']
+        }
+      }
+    ).exec();
+  }
+  public async updateSocialLinksInDB(userId: string, links: ISocialLinks): Promise<void> {
+    await UserModel.updateOne({ _id: userId }, { $set: { social: links } }).exec();
   }
   private aggregateProject() {
     return {
