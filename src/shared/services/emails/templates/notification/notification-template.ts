@@ -3,9 +3,9 @@ import ejs from 'ejs';
 import { INotificationTemplate } from '@notification/interfaces/notification.interface';
 
 class NotificationTemplate {
-  public notificationMessageTemplate(templateParas:INotificationTemplate):string{
-    const {username,header,message} = templateParas;
-    return ejs.render(fs.readFileSync(__dirname + '/notification-template.ejs','utf-8'),{
+  public notificationMessageTemplate(templateParas: INotificationTemplate): string {
+    const { username, header, message } = templateParas;
+    return ejs.render(fs.readFileSync(__dirname + '/notification-template.ejs', 'utf-8'), {
       username,
       header,
       message,
@@ -14,4 +14,4 @@ class NotificationTemplate {
   }
 }
 
-export const notificationTemplate:NotificationTemplate = new NotificationTemplate();
+export const notificationTemplate: NotificationTemplate = new NotificationTemplate();

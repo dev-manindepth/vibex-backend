@@ -35,3 +35,15 @@ GET {{baseUrl}}/{{urlPath}}/user/profile/search/Manish
 Content-Type: application/json
 Accept: application/json
 withCredentials: true
+
+###
+PUT {{baseUrl}}/{{urlPath}}/user/profile/change-password
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "currentPassword": "54321",
+  "newPassword": "12345",
+  "confirmPassword": "12345"
+}

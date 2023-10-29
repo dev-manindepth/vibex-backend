@@ -10,7 +10,8 @@ class MailQueue extends BaseQueue {
     this.processJob('commentsEmail', 5, mailWorker.sendMail);
     this.processJob('followersEmail', 5, mailWorker.sendMail);
     this.processJob('reactionsEmail', 5, mailWorker.sendMail);
-    this.processJob('directMessageEmail',5,mailWorker.sendMail);
+    this.processJob('directMessageEmail', 5, mailWorker.sendMail);
+    this.processJob('changePassword', 5, mailWorker.sendMail);
   }
   public async addEmailJob(name: string, data: IEmailJob) {
     this.addJob(name, data);
