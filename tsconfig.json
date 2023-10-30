@@ -36,6 +36,7 @@
       "@notification/*": ["src/features/notification/*"],
       "@image/*": ["src/features/images/*"],
       "@chat/*": ["src/features/chat/*"],
+      "@health/*": ["src/features/health/*"],
       "@global/*": ["src/shared/globals/*"],
       "@service/*": ["src/shared/services/*"],
       "@socket/*": ["src/shared/sockets/*"],
