@@ -1,10 +1,12 @@
 import { ServerError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/helpers';
+import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 import { config } from '@root/config';
 import { BaseCache } from '@service/redis/base.cache';
 import { INotificationSettings, ISocialLinks, IUserDocument } from '@user/interfaces/user.interface';
 import Logger from 'bunyan';
 
+type UserCacheMulitiType = string | number | Buffer | RedisCommandRawReply[] | IUserDocument | IUserDocument[];
 type UserPropValue = string | ISocialLinks | INotificationSettings;
 const log: Logger = config.createLogger('userCache');
 export class UserCache extends BaseCache {
@@ -89,6 +91,97 @@ export class UserCache extends BaseCache {
       return userDocument;
     } catch (err) {
       throw new ServerError('Something went wrong . Please Try again');
+    }
+  }
+  public async getUsersFromCache(start: number, end: number, excludedUserId: string): Promise<IUserDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const userIdList: string[] = await this.client.ZRANGE('user', start, end, { REV: true });
+      const mulit: ReturnType<typeof this.client.multi> = this.client.multi();
+      for (const userId of userIdList) {
+        if (userId !== excludedUserId) {
+          mulit.HGETALL(`users:${userId}`);
+        }
+      }
+      const usersList: UserCacheMulitiType = (await mulit.exec()) as UserCacheMulitiType;
+      const users: IUserDocument[] = [];
+      for (const user of usersList as IUserDocument[]) {
+        user.createdAt = new Date(Helpers.parseJSON(`${user.createdAt}`)) as Date;
+        user.blocked = Helpers.parseJSON(`${user.blocked}`);
+        user.blockedBy = Helpers.parseJSON(`${user.blockedBy}`);
+        user.notifications = Helpers.parseJSON(`${user.notifications}`);
+        user.social = Helpers.parseJSON(`${user.social}`);
+        user.postsCount = Helpers.parseJSON(`${user.postsCount}`);
+        user.followersCount = Helpers.parseJSON(`${user.followersCount}`);
+        user.followingCount = Helpers.parseJSON(`${user.followingCount}`);
+        user.bgImageId = Helpers.parseJSON(`${user.bgImageId}`);
+        user.bgImageVersion = Helpers.parseJSON(`${user.bgImageVersion}`);
+        user.profilePicture = Helpers.parseJSON(`${user.profilePicture}`);
+        user.work = Helpers.parseJSON(`${user.work}`);
+        user.school = Helpers.parseJSON(`${user.school}`);
+        user.location = Helpers.parseJSON(`${user.location}`);
+        user.quote = Helpers.parseJSON(`${user.quote}`);
+        users.push(user);
+      }
+      return users;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again.');
+    }
+  }
+  public async getTotalUsersInCache(): Promise<number> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const count: number = await this.client.ZCARD('user');
+      return count;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server error.Try again.');
+    }
+  }
+  public async getRandomUsersFromCache(userId: string, excludedUsername: string): Promise<IUserDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+      const userIdList: string[] = await this.client.ZRANGE('user', 0, -1);
+      const randomUsers: string[] = Helpers.shuffle(userIdList).slice(0, 10);
+      const followers: string[] = await this.client.LRANGE(`follower:${userId}`, 0, -1);
+
+      let users: IUserDocument[] = [];
+      for (const user of randomUsers) {
+        const followerIndex = followers.indexOf(user);
+        if (followerIndex < 0) {
+          const userHash: IUserDocument = (await this.client.HGETALL(`users:${user}`)) as unknown as IUserDocument;
+          users.push(userHash);
+        }
+      }
+      users = users.filter((user) => user.username != excludedUsername);
+      for (const user of users) {
+        user.createdAt = new Date(Helpers.parseJSON(`${user.createdAt}`)) as Date;
+        user.blocked = Helpers.parseJSON(`${user.blocked}`);
+        user.blockedBy = Helpers.parseJSON(`${user.blockedBy}`);
+        user.notifications = Helpers.parseJSON(`${user.notifications}`);
+        user.social = Helpers.parseJSON(`${user.social}`);
+        user.postsCount = Helpers.parseJSON(`${user.postsCount}`);
+        user.followersCount = Helpers.parseJSON(`${user.followersCount}`);
+        user.followingCount = Helpers.parseJSON(`${user.followingCount}`);
+        user.bgImageId = Helpers.parseJSON(`${user.bgImageId}`);
+        user.bgImageVersion = Helpers.parseJSON(`${user.bgImageVersion}`);
+        user.profilePicture = Helpers.parseJSON(`${user.profilePicture}`);
+        user.work = Helpers.parseJSON(`${user.work}`);
+        user.school = Helpers.parseJSON(`${user.school}`);
+        user.location = Helpers.parseJSON(`${user.location}`);
+        user.quote = Helpers.parseJSON(`${user.quote}`);
+      }
+      return users;
+    } catch (err) {
+      log.error(err);
+      throw new ServerError('Server Error.Try again');
     }
   }
   public async updateSingleUserPropInCache(userId: string, prop: string, value: UserPropValue): Promise<IUserDocument | null> {

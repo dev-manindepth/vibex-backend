@@ -24,7 +24,7 @@ const userSchema: Schema = new Schema({
     youtube: { type: String, default: '' }
   },
   work: { type: String, default: '' },
-  schoool: { type: String, default: '' },
+  school: { type: String, default: '' },
   location: { type: String, default: '' },
   quote: { type: String, default: '' },
   bgImageVersion: { type: String, default: '' },
