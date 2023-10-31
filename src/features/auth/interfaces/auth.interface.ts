@@ -18,6 +18,15 @@ export interface AuthPayload {
   avatarColor: string;
   iat?: number;
 }
+export interface IAuthUser {
+  _id: string;
+  uId: string;
+  username: string;
+  email: string;
+  password: string;
+  avatarColor: string;
+  createdAt: Date;
+}
 export interface IAuthDocument extends Document {
   _id: string | ObjectId;
   uId: string;
