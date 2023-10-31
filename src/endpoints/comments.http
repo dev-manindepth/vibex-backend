@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:5000
+@urlPath = api/v1
+
+###
+GET {{baseUrl}}/{{urlPath}}/post/comment/6513fef0f3da4d25efbd0880
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+###
+GET {{baseUrl}}/{{urlPath}}/post/commentnames/6513ff1df3da4d25efbd0884
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+###
+
+GET {{baseUrl}}/{{urlPath}}/post/single/comment/6513fef0f3da4d25efbd0880/6524abc115281a419e228ce9
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+###
+POST {{baseUrl}}/{{urlPath}}/post/comment
+Content-Type: application/json
+Accept: application/json
+withCredentials: true
+
+{
+  "userTo": "65315c5488c749b864a03466",
+  "postId": "6531606688c749b864a0348d",
+  "comment": "This is my forth comment",
+  "profilePicture":"https://res.cloudinary.com/df5lu39z1/v1697733717/65315c5488c749b864a03466"
+}
