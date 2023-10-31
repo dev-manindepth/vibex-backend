@@ -26,12 +26,22 @@
       // Transform paths in output .d.ts files (Include this line if you output declarations files)
       { "transform": "typescript-transform-paths", "afterDeclarations": true }
     ],
-    "paths":{
-      "@global/*":["src/shared/globals/*"],
-      "@service/*":["src/shared/services/*"],
-      "@socket/*":["src/shared/sockets/*"],
-      "@worker/*":["src/shared/workers"],
-      "@root/*":["src/*"]
+    "paths": {
+      "@auth/*": ["src/features/auth/*"],
+      "@user/*": ["src/features/user/*"],
+      "@post/*": ["src/features/post/*"],
+      "@reaction/*": ["src/features/reactions/*"],
+      "@comment/*": ["src/features/comments/*"],
+      "@follow/*": ["src/features/follow/*"],
+      "@notification/*": ["src/features/notification/*"],
+      "@image/*": ["src/features/images/*"],
+      "@chat/*": ["src/features/chat/*"],
+      "@health/*": ["src/features/health/*"],
+      "@global/*": ["src/shared/globals/*"],
+      "@service/*": ["src/shared/services/*"],
+      "@socket/*": ["src/shared/sockets/*"],
+      "@worker/*": ["src/shared/workers"],
+      "@root/*": ["src/*"]
     }
   }
 }

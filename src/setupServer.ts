@@ -10,9 +10,16 @@ import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import Logger from 'bunyan';
+import apiStats from 'swagger-stats';
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
+import { PostSocketIO } from '@socket/post.socket';
+import { FollowSocketIO } from '@socket/follow';
+import { NotificationSocketIO } from '@socket/notification';
+import { ImageSocketIO } from '@socket/image';
+import { ChatSocketIO } from '@socket/chat';
+import { UserSocketIO } from '@socket/user';
 
 const log: Logger = config.createLogger('setupServer');
 const SERVER_PORT = 5000;
@@ -25,6 +32,7 @@ export class VibeXServer {
     this.securityMiddleware(this.app);
     this.standardMiddleware(this.app);
     this.routesMiddleware(this.app);
+    this.apiMonitor(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
   }
@@ -57,9 +65,12 @@ export class VibeXServer {
   private routesMiddleware(app: Application): void {
     applicationRoutes(app);
   }
+  private apiMonitor(app: Application): void {
+    app.use(apiStats.getMiddleware({ uriPath: '/api-monitor' }));
+  }
   private globalErrorHandler(app: Application): void {
-    app.use('*', (req: Request, res: Response) => {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
+    app.all('*', (req: Request, res: Response) => {
+      res.status(HTTP_STATUS.NOT_FOUND).json({ message: `${req.originalUrl} not found` });
     });
     app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
       log.error(error);
@@ -103,5 +114,20 @@ export class VibeXServer {
       log.info(`Server listening on PORT ${SERVER_PORT}`);
     });
   }
-  private socketIOConnections(io: Server): void {}
+
+  private socketIOConnections(io: Server): void {
+    const postSocketHandler: PostSocketIO = new PostSocketIO(io);
+    const followSocketHandler: FollowSocketIO = new FollowSocketIO(io);
+    const notificationSocketHandler: NotificationSocketIO = new NotificationSocketIO();
+    const imageSocketHandler: ImageSocketIO = new ImageSocketIO();
+    const chatSocketHandler: ChatSocketIO = new ChatSocketIO(io);
+    const userSocketHandler: UserSocketIO = new UserSocketIO(io);
+
+    postSocketHandler.listen();
+    followSocketHandler.listen();
+    notificationSocketHandler.listen(io);
+    imageSocketHandler.listen(io);
+    chatSocketHandler.listen();
+    userSocketHandler.listen();
+  }
 }
