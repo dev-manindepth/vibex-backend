@@ -10,6 +10,7 @@ import { Server } from 'socket.io';
 import { createClient } from 'redis';
 import { createAdapter } from '@socket.io/redis-adapter';
 import Logger from 'bunyan';
+import apiStats from 'swagger-stats';
 import { config } from '@root/config';
 import applicationRoutes from '@root/routes';
 import { CustomError, IErrorResponse } from '@global/helpers/error-handler';
@@ -31,6 +32,7 @@ export class VibeXServer {
     this.securityMiddleware(this.app);
     this.standardMiddleware(this.app);
     this.routesMiddleware(this.app);
+    this.apiMonitor(this.app);
     this.globalErrorHandler(this.app);
     this.startServer(this.app);
   }
@@ -62,6 +64,9 @@ export class VibeXServer {
   }
   private routesMiddleware(app: Application): void {
     applicationRoutes(app);
+  }
+  private apiMonitor(app: Application): void {
+    app.use(apiStats.getMiddleware({ uriPath: '/api-monitor' }));
   }
   private globalErrorHandler(app: Application): void {
     app.all('*', (req: Request, res: Response) => {
